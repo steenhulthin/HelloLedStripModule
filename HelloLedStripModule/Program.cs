@@ -11,30 +11,33 @@ using Microsoft.SPOT.Touch;
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
+using Gadgeteer.Modules.GHIElectronics;
 
 namespace HelloLedStripModule
 {
     public partial class Program
     {
+        // LED number 0 is the first LED from the RIGHT of the LED strip
+        private int _ledNumber = 0;
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
-            /*******************************************************************************************
-            Modules added in the Program.gadgeteer designer view are used by typing 
-            their name followed by a period, e.g.  button.  or  camera.
-            
-            Many modules generate useful events. Type +=<tab><tab> to add a handler to an event, e.g.:
-                button.ButtonPressed +=<tab><tab>
-            
-            If you want to do something periodically, use a GT.Timer and handle its Tick event, e.g.:
-                GT.Timer timer = new GT.Timer(1000); // every second (1000ms)
-                timer.Tick +=<tab><tab>
-                timer.Start();
-            *******************************************************************************************/
-
-
-            // Use Debug.Print to show messages in Visual Studio's "Output" window during debugging.
             Debug.Print("Program Started");
+            led_Strip.TurnAllLedsOff();
+            led_Strip.TurnAllLedsOn();
+            Thread.Sleep(1000);
+            led_Strip.TurnAllLedsOff();
+            var timer = new GT.Timer(100);
+            timer.Tick += timer_Tick;
+            timer.Start();
+        }
+
+        void timer_Tick(GT.Timer timer)
+        {
+            led_Strip.TurnLEDOff(_ledNumber);
+            if (_ledNumber == 6) _ledNumber = 0;
+            else _ledNumber++;
+            led_Strip.TurnLEDOn(_ledNumber);
         }
     }
 }
